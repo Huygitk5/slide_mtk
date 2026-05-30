@@ -69,7 +69,7 @@
 
         <!-- Slide 1: Title -->
         <div class="slide active flex-col items-center justify-center h-full text-center px-10 relative"
-             data-notes="Chào mừng mọi người. Hôm nay chúng ta sẽ cùng tìm hiểu về một trong những Design Pattern mạnh mẽ nhất: Decorator Pattern, và cách áp dụng nó vào dự án thực tế.">
+             data-notes="Chào mừng mọi người. Hôm nay chúng bản ta sẽ cùng tìm hiểu về một trong những Design Pattern mạnh mẽ nhất: Decorator Pattern, và cách áp dụng nó vào dự án thực tế.">
             <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 -z-10"></div>
             <div class="mb-6 inline-block p-4 rounded-full bg-blue-500/10 text-blue-400">
                 <i class="fas fa-layer-group text-6xl"></i>
@@ -301,69 +301,192 @@
                         <span class="text-emerald-400 font-bold">+ 100.000 VNĐ</span>
                     </div>
                     <div class="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
-                        <span class="font-mono text-amber-300">PeakHourDecorator</span>
-                        <span class="text-emerald-400 font-bold">+ 30.000 VNĐ</span>
+                        <span class="font-mono text-amber-300">BabyChairDecorator</span>
+                        <span class="text-emerald-400 font-bold">+ 50.000 VNĐ / ghế</span>
                     </div>
                     <div class="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
-                        <span class="font-mono text-amber-300">HolidayDecorator</span>
-                        <span class="text-emerald-400 font-bold">+ 50.000 VNĐ</span>
+                        <span class="font-mono text-amber-300">PeakHourDecorator</span>
+                        <span class="text-emerald-400 font-bold">+ 30.000 VNĐ</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 9: Kịch bản -->
+        <!-- Slide 9: Bóc tách Code 1 - Component & Core -->
         <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
-             data-notes="Tại đây, mọi người có thể thấy code giao diện rất ngắn gọn. Chỉ cần check IF và bọc đối tượng lại, chứ không cần quan tâm đến logic tính tiền lằng nhằng.">
-            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.3. Kịch bản mô phỏng Winform</h2>
+             data-notes="Bước đầu tiên, chúng ta cần một hợp đồng chung là Interface ITableBooking để đồng nhất Lõi và Vỏ. Kế tiếp là BasicBooking đại diện cho phần Lõi - một chiếc bàn tiêu chuẩn có mức cọc là 50k, chưa kèm theo dịch vụ gì.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.3. Code Bước 1: Xây dựng nền móng (Interface & Core)</h2>
             <div class="w-20 h-1 bg-blue-500 rounded mb-8"></div>
             
-            <div class="grid grid-cols-12 gap-8 items-stretch">
-                <!-- UI Mookup -->
-                <div class="col-span-5 bg-slate-200 rounded-xl overflow-hidden shadow-2xl flex flex-col text-slate-800">
-                    <div class="bg-blue-600 text-white p-3 font-semibold text-sm flex items-center justify-between">
-                        <span><i class="fas fa-desktop mr-2"></i> Tạo Đặt Bàn</span>
-                        <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div>
-                    </div>
-                    <div class="p-6 flex-1 bg-white">
-                        <p class="font-bold mb-3 border-b pb-2">Tuỳ chọn bàn:</p>
-                        <div class="space-y-3">
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="font-medium text-blue-600">Bàn gần cửa sổ</span></label>
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4"> Khu vực VIP</label>
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="font-medium text-blue-600">Giờ cao điểm</span></label>
-                        </div>
-                        <button class="mt-8 w-full bg-blue-600 text-white py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition">Tính Phí & Lưu</button>
+            <div class="rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-lg font-mono">
+                <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 font-bold flex justify-between items-center">
+                    <span><i class="fab fa-microsoft text-blue-400 mr-2"></i>1. Component & Concrete Component</span>
+                </div>
+                <div class="p-8 bg-[#1e1e1e] flex-1 text-slate-300 leading-loose">
+<pre><code><span class="text-green-500">// Giao diện chung bắt buộc mọi Lõi và Vỏ bọc phải tuân thủ</span>
+<span class="text-blue-400">public interface</span> <span class="text-emerald-300">ITableBooking</span>
+{
+    <span class="text-blue-400">string</span> <span class="text-yellow-200">GetBookingInfo</span>();
+    <span class="text-blue-400">decimal</span> <span class="text-yellow-200">GetDepositFee</span>();
+}
+
+<span class="text-green-500">// Lõi cơ bản (Bàn tiêu chuẩn)</span>
+<span class="text-blue-400">public class</span> <span class="text-emerald-300">BasicBooking</span> : <span class="text-emerald-300">ITableBooking</span>
+{
+    <span class="text-blue-400">public string</span> <span class="text-yellow-200">GetBookingInfo</span>() 
+        =&gt; <span class="text-orange-300">"Bàn tiêu chuẩn"</span>;
+
+    <span class="text-blue-400">public decimal</span> <span class="text-yellow-200">GetDepositFee</span>() 
+        =&gt; <span class="text-purple-300">50000</span>; <span class="text-slate-500">// Cọc cơ bản</span>
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Bóc tách Code 2 - Base Decorator -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Đây là linh hồn của Decorator. Lớp BookingDecorator cũng triển khai ITableBooking, nhưng điều đặc biệt là nó ngầm giữ một đối tượng _booking bên trong. Khi hàm được gọi, nó không tự tính toán mà ủy quyền (delegate) lại cho đối tượng đang nằm bên trong nó.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.4. Code Bước 2: Lớp vỏ bọc cơ sở (Base Decorator)</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-8"></div>
+            
+            <div class="rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-lg font-mono relative">
+                <div class="bg-slate-800 p-3 text-amber-400 border-b border-slate-700 font-bold">
+                    <i class="fab fa-microsoft mr-2"></i>2. Base Decorator (Trái tim của Pattern)
+                </div>
+                <div class="p-8 bg-[#1e1e1e] flex-1 text-slate-300 leading-loose relative">
+<pre><code><span class="text-blue-400">public abstract class</span> <span class="text-amber-300">BookingDecorator</span> : <span class="text-emerald-300">ITableBooking</span>
+{
+    <span class="text-green-500">// Biến tham chiếu trỏ tới lớp Lõi hoặc Vỏ bọc nằm bên trong nó</span>
+    <span class="text-blue-400">protected</span> <span class="text-emerald-300">ITableBooking</span> <span class="text-red-300">_booking</span>; 
+
+    <span class="text-blue-400">public</span> <span class="text-yellow-200">BookingDecorator</span>(<span class="text-emerald-300">ITableBooking</span> booking)
+    {
+        _booking = booking;
+    }
+
+    <span class="text-green-500">// Cơ chế ỦY QUYỀN (Delegate) thực thi</span>
+    <span class="text-blue-400">public virtual string</span> <span class="text-yellow-200">GetBookingInfo</span>() 
+        =&gt; <span class="text-red-300">_booking</span>.<span class="text-yellow-200">GetBookingInfo</span>();
+
+    <span class="text-blue-400">public virtual decimal</span> <span class="text-yellow-200">GetDepositFee</span>() 
+        =&gt; <span class="text-red-300">_booking</span>.<span class="text-yellow-200">GetDepositFee</span>();
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Bóc tách Code 3 - Concrete Decorators -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-7xl mx-auto"
+             data-notes="Từ lớp nền tảng vừa tạo, ta viết các vỏ bọc thực tế. Cấu trúc rất đơn giản: Ta gọi hàm base() để lấy kết quả từ Lõi bên trong, rồi tự mình cộng thêm chuỗi thông tin hoặc cộng thêm tiền. Đặc biệt, BabyChair cho thấy Decorator có thể truyền thêm tham số dễ dàng.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.5. Code Bước 3: Các lớp bọc chức năng cụ thể</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-6"></div>
+            
+            <div class="grid grid-cols-2 gap-6 h-[60vh]">
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-sm font-mono">
+                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 font-bold"><i class="fab fa-microsoft text-blue-400 mr-2"></i>Bọc tính năng cơ bản</div>
+                    <div class="p-5 bg-[#1e1e1e] flex-1 text-slate-300 overflow-y-auto leading-relaxed">
+<pre><code><span class="text-green-500">// Vỏ bọc: Bàn gần cửa sổ (+20k)</span>
+<span class="text-blue-400">public class</span> <span class="text-amber-300">WindowSeatDecorator</span> : <span class="text-emerald-300">BookingDecorator</span>
+{
+    <span class="text-blue-400">public</span> <span class="text-yellow-200">WindowSeatDecorator</span>(<span class="text-emerald-300">ITableBooking</span> b) 
+        : <span class="text-blue-400">base</span>(b) { }
+
+    <span class="text-blue-400">public override string</span> <span class="text-yellow-200">GetBookingInfo</span>()
+    {
+        <span class="text-green-500">// Lấy Info cũ + Nối thêm thông tin mới</span>
+        <span class="text-blue-400">return base</span>.<span class="text-yellow-200">GetBookingInfo</span>() + <span class="text-orange-300">" + Cửa sổ"</span>;
+    }
+
+    <span class="text-blue-400">public override decimal</span> <span class="text-yellow-200">GetDepositFee</span>()
+    {
+        <span class="text-green-500">// Lấy tiền cũ + Cộng thêm 20k</span>
+        <span class="text-blue-400">return base</span>.<span class="text-yellow-200">GetDepositFee</span>() + <span class="text-purple-300">20000</span>;
+    }
+}</code></pre>
                     </div>
                 </div>
 
-                <!-- Code -->
-                <div class="col-span-7 rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-sm font-mono relative">
-                    <div class="bg-slate-800 p-3 text-slate-400 border-b border-slate-700">Form1.cs (Sự kiện Nút bấm)</div>
-                    <div class="p-6 bg-[#1e1e1e] flex-1 text-slate-300 leading-relaxed overflow-x-auto">
-<pre><code><span class="text-blue-400">void</span> <span class="text-yellow-200">btnSave_Click</span>(<span class="text-blue-400">object</span> sender, <span class="text-blue-400">EventArgs</span> e) {
-    <span class="text-green-500">// 1. Khởi tạo Lõi cơ bản</span>
-    ITableBooking booking = <span class="text-blue-400">new</span> <span class="text-emerald-300">BasicBooking</span>(); 
-    
-    <span class="text-green-500">// 2. Bọc vỏ dựa trên UI</span>
-    <span class="text-purple-400">if</span> (chkWindowSeat.Checked)
-        booking = <span class="text-blue-400">new</span> <span class="text-amber-300">WindowSeatDecorator</span>(booking);
-        
-    <span class="text-purple-400">if</span> (chkVIP.Checked)
-        booking = <span class="text-blue-400">new</span> <span class="text-amber-300">VIPZoneDecorator</span>(booking);
-        
-    <span class="text-purple-400">if</span> (chkPeakHour.Checked)
-        booking = <span class="text-blue-400">new</span> <span class="text-amber-300">PeakHourDecorator</span>(booking);
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-sm font-mono">
+                    <div class="bg-slate-800 p-3 text-slate-300 border-b border-slate-700 font-bold"><i class="fab fa-microsoft text-blue-400 mr-2"></i>Bọc tính năng có tham số</div>
+                    <div class="p-5 bg-[#1e1e1e] flex-1 text-slate-300 overflow-y-auto leading-relaxed">
+<pre><code><span class="text-green-500">// Vỏ bọc: Ghế trẻ em (Truyền số lượng)</span>
+<span class="text-blue-400">public class</span> <span class="text-amber-300">BabyChairDecorator</span> : <span class="text-emerald-300">BookingDecorator</span>
+{
+    <span class="text-blue-400">private int</span> _qty; <span class="text-green-500">// Số lượng</span>
 
-    <span class="text-green-500">// 3. In kết quả cuối cùng</span>
-    <span class="text-blue-400">decimal</span> total = booking.<span class="text-yellow-200">GetDepositFee</span>();
-    <span class="text-blue-400">string</span> info = booking.<span class="text-yellow-200">GetInfo</span>();
+    <span class="text-blue-400">public</span> <span class="text-yellow-200">BabyChairDecorator</span>(<span class="text-emerald-300">ITableBooking</span> b, <span class="text-blue-400">int</span> qty) 
+        : <span class="text-blue-400">base</span>(b)
+    {
+        _qty = qty;
+    }
+
+    <span class="text-blue-400">public override decimal</span> <span class="text-yellow-200">GetDepositFee</span>()
+    {
+        <span class="text-green-500">// Tiền cũ + (50k * Số lượng)</span>
+        <span class="text-blue-400">return base</span>.<span class="text-yellow-200">GetDepositFee</span>() + (<span class="text-purple-300">50000</span> * _qty);
+    }
+    <span class="text-green-500">/* GetBookingInfo() tương tự... */</span>
 }</code></pre>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 10: Tổng kết -->
+        <!-- Slide 12: Bóc tách Code 4 - Winform UI Client -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-7xl mx-auto"
+             data-notes="Cuối cùng, ở phía giao diện (Client), ta chỉ việc khởi tạo lõi, kiểm tra người dùng chọn gì thì lồng lớp vỏ bọc tương ứng. Code form hoàn toàn không chứa phép tính cộng trừ nào, cực kỳ sạch sẽ và dễ bảo trì. Mọi logic tính tiền đã được đóng gói an toàn trong các lớp Decorator.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.6. Code Bước 4: Lắp ráp tại UI (Winform Client)</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-6"></div>
+            
+            <div class="grid grid-cols-12 gap-8 items-stretch h-[60vh]">
+                <!-- UI Mookup -->
+                <div class="col-span-4 bg-slate-200 rounded-xl overflow-hidden shadow-2xl flex flex-col text-slate-800">
+                    <div class="bg-blue-600 text-white p-3 font-semibold text-sm flex items-center justify-between">
+                        <span><i class="fas fa-desktop mr-2"></i> Tạo Đặt Bàn</span>
+                        <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div>
+                    </div>
+                    <div class="p-6 flex-1 bg-white flex flex-col justify-center">
+                        <div class="space-y-4">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="w-5 h-5 text-blue-600"> <span class="font-bold text-blue-600">Bàn gần cửa sổ</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="w-5 h-5 text-blue-600"> <span class="font-bold text-blue-600">Giờ cao điểm</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-5 h-5"> Khu VIP</label>
+                            <label class="flex items-center gap-3 pt-3 border-t">
+                                <input type="number" value="2" class="w-16 h-8 border-2 border-blue-400 rounded text-center text-lg font-bold bg-blue-50"> <span class="font-bold">Ghế trẻ em</span>
+                            </label>
+                        </div>
+                        <button class="mt-8 w-full bg-blue-600 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-blue-700 transition">Tính Phí & Lưu MySQL</button>
+                    </div>
+                </div>
+
+                <!-- Code -->
+                <div class="col-span-8 rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-[15px] font-mono relative">
+                    <div class="bg-slate-800 p-3 text-slate-400 border-b border-slate-700 font-bold"><i class="fab fa-microsoft text-blue-400 mr-2"></i>Form1.cs (Sự kiện btnCalculate_Click)</div>
+                    <div class="p-5 bg-[#1e1e1e] flex-1 text-slate-300 leading-loose overflow-y-auto">
+<pre><code><span class="text-green-500">// 1. Khởi tạo Lõi cơ bản (50k)</span>
+<span class="text-emerald-300">ITableBooking</span> myBooking = <span class="text-blue-400">new</span> <span class="text-emerald-300">BasicBooking</span>(); 
+
+<span class="text-green-500">// 2. Bọc vỏ dựa trên UI (Cộng dồn tính năng)</span>
+<span class="text-purple-400">if</span> (chkWindowSeat.Checked)
+    myBooking = <span class="text-blue-400">new</span> <span class="text-amber-300">WindowSeatDecorator</span>(myBooking);
+    
+<span class="text-purple-400">if</span> (chkPeakHour.Checked)
+    myBooking = <span class="text-blue-400">new</span> <span class="text-amber-300">PeakHourDecorator</span>(myBooking);
+
+<span class="text-blue-400">int</span> chairCount = (<span class="text-blue-400">int</span>)numBabyChair.Value;
+<span class="text-purple-400">if</span> (chairCount &gt; 0)
+    myBooking = <span class="text-blue-400">new</span> <span class="text-amber-300">BabyChairDecorator</span>(myBooking, chairCount);
+
+<span class="text-green-500">// 3. Lấy kết quả cuối cùng siêu gọn gàng</span>
+<span class="text-blue-400">string</span> finalInfo = myBooking.<span class="text-yellow-200">GetBookingInfo</span>();
+<span class="text-blue-400">decimal</span> finalFee = myBooking.<span class="text-yellow-200">GetDepositFee</span>();
+
+<span class="text-green-500">// 4. Thực thi lệnh INSERT INTO Bookings ... </span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Tổng kết -->
         <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto text-center"
              data-notes="Tóm lại, với Decorator, hệ thống của chúng ta đã linh hoạt và sạch sẽ hơn rất nhiều. Cảm ơn thầy cô và các bạn đã theo dõi.">
             <div class="text-7xl text-emerald-400 mb-8"><i class="fas fa-medal"></i></div>
@@ -371,32 +494,32 @@
             <div class="w-32 h-1 bg-emerald-500 rounded mx-auto mb-10"></div>
             
             <div class="grid grid-cols-3 gap-6 text-left">
-                <div class="glass-panel p-8 rounded-2xl border-t-4 border-emerald-500">
+                <div class="glass-panel p-8 rounded-2xl border-t-4 border-emerald-500 shadow-xl">
                     <h3 class="text-xl font-bold text-white mb-3">Dập tắt bùng nổ lớp</h3>
                     <p class="text-slate-400">Chấm dứt hoàn toàn việc phải tạo các Class ghép tên vô nghĩa như <code>VIPPeakHourBooking</code>.</p>
                 </div>
-                <div class="glass-panel p-8 rounded-2xl border-t-4 border-blue-500">
+                <div class="glass-panel p-8 rounded-2xl border-t-4 border-blue-500 shadow-xl">
                     <h3 class="text-xl font-bold text-white mb-3">Mã UI "Sạch bong"</h3>
                     <p class="text-slate-400">Form Winform không cần phải <code>if/else</code> tính tiền cộng trừ, nó chỉ làm nhiệm vụ: Bọc và Gọi.</p>
                 </div>
-                <div class="glass-panel p-8 rounded-2xl border-t-4 border-purple-500">
+                <div class="glass-panel p-8 rounded-2xl border-t-4 border-purple-500 shadow-xl">
                     <h3 class="text-xl font-bold text-white mb-3">Mở rộng vô hạn</h3>
                     <p class="text-slate-400">Tháng sau thêm phí "Máy lạnh"? Chỉ cần tạo 1 Class Decorator mới, không sợ sập code cũ!</p>
                 </div>
             </div>
 
-            <div class="mt-16 text-slate-500 text-lg">
-                --- Cảm ơn các bạn đã lắng nghe ---
+            <div class="mt-16 text-slate-500 text-lg font-light tracking-widest">
+                --- CẢM ƠN CÁC BẠN ĐÃ LẮNG NGHE ---
             </div>
         </div>
 
-    </div>
+    </div> <!-- Kết thúc slides-container -->
 
     <!-- Navigation Controls -->
     <div class="fixed bottom-6 right-6 flex gap-4 z-40 items-center">
         <!-- Slide Counter -->
         <div class="text-slate-400 font-mono bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700">
-            <span id="current-slide-num">1</span> / <span id="total-slides">10</span>
+            <span id="current-slide-num">1</span> / <span id="total-slides">11</span>
         </div>
         
         <button id="btn-prev" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-blue-600 text-white flex items-center justify-center transition shadow-lg border border-slate-700">
