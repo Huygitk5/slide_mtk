@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decorator Pattern Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-color: #0f172a; /* Slate 900 */
+            color: #f8fafc; /* Slate 50 */
+        }
+
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7); /* Slate 800 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar for notes */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-screen w-full relative">
+
+    <!-- Progress Bar -->
+    <div class="absolute top-0 left-0 h-1 bg-gray-800 w-full z-50">
+        <div id="progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 10%;"></div>
+    </div>
+
+    <!-- Slides Container -->
+    <div id="slides-container" class="w-full h-full">
+
+        <!-- Slide 1: Title -->
+        <div class="slide active flex-col items-center justify-center h-full text-center px-10 relative"
+             data-notes="Chào mừng mọi người. Hôm nay chúng ta sẽ cùng tìm hiểu về một trong những Design Pattern mạnh mẽ nhất: Decorator Pattern, và cách áp dụng nó vào dự án thực tế.">
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 -z-10"></div>
+            <div class="mb-6 inline-block p-4 rounded-full bg-blue-500/10 text-blue-400">
+                <i class="fas fa-layer-group text-6xl"></i>
+            </div>
+            <h1 class="text-6xl font-bold mb-6 tracking-tight">DECORATOR <span class="gradient-text">PATTERN</span></h1>
+            <h2 class="text-2xl text-slate-300 font-light max-w-3xl leading-relaxed">Cơ sở lý thuyết & Ứng dụng thực tiễn xây dựng tính năng tính phí trong Winform C#</h2>
+            <div class="mt-12 text-slate-500 flex items-center gap-2">
+                <i class="fas fa-keyboard"></i> Dùng phím mũi tên <i class="fas fa-arrow-left mx-1"></i> <i class="fas fa-arrow-right mx-1"></i> để chuyển Slide
+            </div>
+        </div>
+
+        <!-- Slide 2: Khái niệm -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Nhấn mạnh vào từ khóa 'Runtime' (lúc chạy) và 'Không thay đổi mã nguồn gốc'. Đây là điểm ăn tiền của Decorator so với phương pháp kế thừa truyền thống.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">1.1. Khái niệm & Bối cảnh</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-10"></div>
+            
+            <div class="grid grid-cols-2 gap-10">
+                <div class="glass-panel p-8 rounded-2xl">
+                    <h3 class="text-2xl font-semibold mb-4 text-emerald-400"><i class="fas fa-book mr-2"></i> Bản chất</h3>
+                    <ul class="space-y-4 text-lg text-slate-300">
+                        <li class="flex items-start gap-3"><i class="fas fa-check-circle text-emerald-500 mt-1 text-sm"></i> Thuộc nhóm Structural (Cấu trúc) của Gang of Four.</li>
+                        <li class="flex items-start gap-3"><i class="fas fa-check-circle text-emerald-500 mt-1 text-sm"></i> Tổ chức, kết hợp các lớp và đối tượng lại với nhau.</li>
+                    </ul>
+                </div>
+                <div class="glass-panel p-8 rounded-2xl">
+                    <h3 class="text-2xl font-semibold mb-4 text-amber-400"><i class="fas fa-bullseye mr-2"></i> Mục đích cốt lõi</h3>
+                    <ul class="space-y-4 text-lg text-slate-300">
+                        <li class="flex items-start gap-3"><i class="fas fa-arrow-right text-amber-500 mt-1 text-sm"></i> Đính kèm tính năng/trạng thái mới ĐỘNG tại thời điểm chạy (Runtime).</li>
+                        <li class="flex items-start gap-3"><i class="fas fa-arrow-right text-amber-500 mt-1 text-sm"></i> Không ảnh hưởng đến đối tượng khác.</li>
+                        <li class="flex items-start gap-3"><i class="fas fa-arrow-right text-amber-500 mt-1 text-sm"></i> Không thay đổi mã nguồn lớp ban đầu.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Class Explosion -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Bạn có thể dùng tay mô tả việc tạo ra hàng chục file class chỉ để chứa các loại topping khác nhau sẽ khiến hệ thống cực kỳ phình to và khó bảo trì.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">1.2. Vấn đề: Sự bùng nổ lớp (Class Explosion)</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-10"></div>
+
+            <div class="flex items-center gap-8 bg-red-900/20 border border-red-500/30 p-8 rounded-2xl mb-8">
+                <div class="text-red-400 text-5xl"><i class="fas fa-bomb"></i></div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-2 text-red-300">Cách tiếp cận cũ: Kế thừa (Inheritance)</h3>
+                    <p class="text-slate-300 text-lg">Áp dụng tĩnh ở cấp độ lớp. Để có Cà phê + Sữa + Caramel, ta phải tạo class <code>CaramelMilkCoffee</code>. Càng nhiều Topping, số lượng class tăng theo cấp số nhân!</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-8 bg-emerald-900/20 border border-emerald-500/30 p-8 rounded-2xl">
+                <div class="text-emerald-400 text-5xl"><i class="fas fa-lightbulb"></i></div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-2 text-emerald-300">Giải pháp của Decorator: Bao gộp (Composition)</h3>
+                    <p class="text-slate-300 text-lg">Tạo ra các lớp "vỏ bọc" độc lập. Mỗi vỏ đại diện cho 1 Topping. Cần gì thì bọc nấy ngay lúc chạy (Runtime) ➔ Dập tắt sự bùng nổ lớp.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: 4 Thành phần -->
+        <div class="slide flex-col justify-center h-full px-10 max-w-7xl mx-auto"
+             data-notes="Mô hình này là bắt buộc. Nếu thiếu Base Decorator và gộp thẳng vào Concrete Decorators, mã nguồn sẽ bị lặp lại và mất đi tính ủy quyền.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">1.3. Cấu trúc 4 thành phần cốt lõi</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-8"></div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-700 shadow-2xl">
+                <table class="w-full text-left text-slate-300 text-lg">
+                    <thead class="bg-slate-800/80 text-blue-300 uppercase font-semibold">
+                        <tr>
+                            <th class="p-5 border-b border-slate-700 w-1/4">Thành phần</th>
+                            <th class="p-5 border-b border-slate-700 w-1/4">Bản chất</th>
+                            <th class="p-5 border-b border-slate-700 w-1/2">Trách nhiệm</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700 bg-slate-900/50">
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-5 font-bold text-white">1. Component</td>
+                            <td class="p-5"><span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded text-sm font-mono">Interface / Abstract</span></td>
+                            <td class="p-5">Giao diện chung. Giúp Client không phân biệt được Lõi hay Vỏ bọc.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-5 font-bold text-white">2. Concrete Component</td>
+                            <td class="p-5"><span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded text-sm font-mono">Class (Lõi)</span></td>
+                            <td class="p-5">Xác định hành vi nền tảng nhất trước khi bị trang trí.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-5 font-bold text-emerald-400">3. Base Decorator</td>
+                            <td class="p-5"><span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded text-sm font-mono">Abstract Class</span></td>
+                            <td class="p-5">Giữ tham chiếu (Pointer) đến Component. <strong>Ủy quyền (Delegate)</strong> công việc cho đối tượng bên trong.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-5 font-bold text-amber-400">4. Concrete Decorators</td>
+                            <td class="p-5"><span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded text-sm font-mono">Class (Kế thừa)</span></td>
+                            <td class="p-5">Chứa logic mới. Gọi hàm lớp cha + Thực hiện thêm logic riêng.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 5: Cơ chế Đệ quy -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Hãy tưởng tượng việc tính tiền hóa đơn. Lớp A tính tiền món ăn, lớp B cộng thêm VAT, lớp C trừ đi Voucher. Dữ liệu sẽ đi từ trong lõi đi ra ngoài lớp vỏ.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">1.4. Cơ chế hoạt động (Củ hành tây)</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-10"></div>
+
+            <div class="flex items-center justify-between gap-12">
+                <div class="flex-1 space-y-6 text-lg text-slate-300">
+                    <p>Hoạt động như một ngăn xếp <strong>(Stack)</strong> đệ quy ngược.</p>
+                    <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-white mb-4">Luồng thực thi:</h4>
+                        <ol class="list-decimal pl-5 space-y-3 marker:text-blue-400">
+                            <li>Client gọi hàm từ lớp ngoài cùng <strong>(C)</strong>.</li>
+                            <li><strong>C</strong> xử lý, ủy quyền gọi hàm cho <strong>B</strong>.</li>
+                            <li><strong>B</strong> xử lý, ủy quyền gọi hàm cho <strong>A</strong> (Lõi).</li>
+                            <li><strong>A</strong> hoàn thành nền tảng, trả kết quả về <strong>B</strong>.</li>
+                            <li><strong>B</strong> nhận, thêm logic, trả về <strong>C</strong>.</li>
+                            <li><strong>C</strong> nhận, thêm logic cuối, trả về <strong>Client</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="w-1/2 flex justify-center">
+                    <!-- CSS Onion diagram -->
+                    <div class="relative w-72 h-72 rounded-full border-4 border-amber-500/50 flex items-center justify-center bg-amber-900/10 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+                        <span class="absolute top-2 text-amber-400 font-bold">Vỏ C (Decorator)</span>
+                        <div class="relative w-52 h-52 rounded-full border-4 border-emerald-500/50 flex items-center justify-center bg-emerald-900/10">
+                            <span class="absolute top-2 text-emerald-400 font-bold">Vỏ B (Decorator)</span>
+                            <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center bg-blue-600 text-white font-bold text-xl shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+                                Lõi A
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Đánh giá -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Decorator rất tuyệt nhưng không phải viên đạn bạc. Việc debug qua các lớp vỏ đan xen nhau có thể gây đau đầu cho các developer mới.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">1.5. Đánh giá chuyên sâu</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-10"></div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <!-- Ưu điểm -->
+                <div class="bg-gradient-to-b from-emerald-900/30 to-slate-900 border border-emerald-500/30 p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-emerald-500 text-6xl"><i class="fas fa-thumbs-up"></i></div>
+                    <h3 class="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-3">
+                        <i class="fas fa-check-circle"></i> Ưu điểm (Chuẩn SOLID)
+                    </h3>
+                    <ul class="space-y-4 text-slate-300">
+                        <li><strong class="text-white">Linh hoạt:</strong> Thêm/bớt tính năng lúc Runtime.</li>
+                        <li><strong class="text-white">SRP (Đơn trách nhiệm):</strong> Chia class khổng lồ thành nhiều class nhỏ.</li>
+                        <li><strong class="text-white">OCP (Đóng/Mở):</strong> Viết thêm Decorator mới mà không sợ hỏng code cũ.</li>
+                    </ul>
+                </div>
+
+                <!-- Nhược điểm -->
+                <div class="bg-gradient-to-b from-red-900/30 to-slate-900 border border-red-500/30 p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-red-500 text-6xl"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3 class="text-2xl font-bold text-red-400 mb-6 flex items-center gap-3">
+                        <i class="fas fa-times-circle"></i> Nhược điểm
+                    </h3>
+                    <ul class="space-y-4 text-slate-300">
+                        <li><strong class="text-white">Khởi tạo dài dòng:</strong> Cần lồng nhiều `new()`. Thường phải dùng kèm Builder/Factory Pattern.</li>
+                        <li><strong class="text-white">Khó gỡ lỗi (Debug):</strong> Trace code vất vả do nhảy qua lại nhiều lớp.</li>
+                        <li><strong class="text-white">Phụ thuộc thứ tự bọc:</strong> Bọc sai thứ tự có thể ra kết quả sai logic nghiệp vụ.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Demo Intro -->
+        <div class="slide flex-col items-center justify-center h-full text-center px-10 relative"
+             data-notes="Chuyển sang phần thực hành. Bài toán đặt bàn rất thực tế, giá cọc phụ thuộc vào các điều kiện linh hoạt ghép lại với nhau.">
+            <div class="inline-block px-4 py-1 rounded-full bg-amber-500/20 text-amber-400 font-semibold mb-6 uppercase tracking-wider text-sm border border-amber-500/30">
+                Phần 2: Thực hành & Code
+            </div>
+            <h2 class="text-5xl font-bold mb-6 text-white leading-tight">DEMO: Ứng dụng Winform<br>Quản lý tính phí đặt bàn</h2>
+            
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 p-8 rounded-2xl text-left max-w-4xl mt-8">
+                <h3 class="text-xl font-bold text-blue-400 mb-4"><i class="fas fa-briefcase"></i> Bối cảnh nghiệp vụ</h3>
+                <p class="text-slate-300 text-lg mb-4">Lễ tân nhận đặt bàn. Phí giữ chỗ (tiền cọc) không cố định mà bị tác động bởi:</p>
+                <div class="flex justify-center gap-10 mt-6">
+                    <div class="flex items-center gap-3 bg-slate-900 px-6 py-4 rounded-xl border border-slate-700">
+                        <i class="fas fa-map-marker-alt text-rose-400 text-2xl"></i>
+                        <span class="text-white font-medium">Vị trí: Cửa sổ, VIP...</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-slate-900 px-6 py-4 rounded-xl border border-slate-700">
+                        <i class="fas fa-clock text-cyan-400 text-2xl"></i>
+                        <span class="text-white font-medium">Thời gian: Lễ, Giờ cao điểm...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Ánh xạ -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Đây là bản thiết kế hệ thống của chúng ta. TableBooking là Interface chung. BasicBooking là bàn bình thường. Còn lại là các vỏ bọc để cộng thêm tiền.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.2. Ánh xạ mô hình Decorator</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-10"></div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Core -->
+                <div class="space-y-6">
+                    <div class="glass-panel p-6 rounded-xl border-l-4 border-l-purple-500">
+                        <h4 class="text-purple-400 font-bold mb-1 text-sm uppercase">1. Component</h4>
+                        <p class="text-xl font-mono text-white">ITableBooking</p>
+                        <p class="text-sm text-slate-400 mt-2">Gồm hàm: <code>GetInfo()</code> và <code>GetDepositFee()</code></p>
+                    </div>
+                    
+                    <div class="glass-panel p-6 rounded-xl border-l-4 border-l-blue-500 relative">
+                        <h4 class="text-blue-400 font-bold mb-1 text-sm uppercase">2. Lõi (Concrete Component)</h4>
+                        <p class="text-xl font-mono text-white">BasicBooking</p>
+                        <p class="text-sm text-slate-400 mt-2">Bàn tiêu chuẩn (Cọc cơ bản: 50k)</p>
+                        <i class="fas fa-arrow-right absolute right-[-20px] top-1/2 transform -translate-y-1/2 text-slate-500 text-2xl z-10"></i>
+                    </div>
+                </div>
+
+                <!-- Decorators -->
+                <div class="space-y-6 border-2 border-dashed border-slate-600 p-6 rounded-2xl relative">
+                    <h4 class="absolute -top-3 left-4 bg-slate-900 px-2 text-amber-400 font-bold text-sm uppercase">3 & 4. Các lớp Vỏ bọc (Decorators)</h4>
+                    
+                    <div class="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
+                        <span class="font-mono text-amber-300">WindowSeatDecorator</span>
+                        <span class="text-emerald-400 font-bold">+ 20.000 VNĐ</span>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
+                        <span class="font-mono text-amber-300">VIPZoneDecorator</span>
+                        <span class="text-emerald-400 font-bold">+ 100.000 VNĐ</span>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
+                        <span class="font-mono text-amber-300">PeakHourDecorator</span>
+                        <span class="text-emerald-400 font-bold">+ 30.000 VNĐ</span>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
+                        <span class="font-mono text-amber-300">HolidayDecorator</span>
+                        <span class="text-emerald-400 font-bold">+ 50.000 VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Kịch bản -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto"
+             data-notes="Tại đây, mọi người có thể thấy code giao diện rất ngắn gọn. Chỉ cần check IF và bọc đối tượng lại, chứ không cần quan tâm đến logic tính tiền lằng nhằng.">
+            <h2 class="text-4xl font-bold mb-2 text-blue-400">2.3. Kịch bản mô phỏng Winform</h2>
+            <div class="w-20 h-1 bg-blue-500 rounded mb-8"></div>
+            
+            <div class="grid grid-cols-12 gap-8 items-stretch">
+                <!-- UI Mookup -->
+                <div class="col-span-5 bg-slate-200 rounded-xl overflow-hidden shadow-2xl flex flex-col text-slate-800">
+                    <div class="bg-blue-600 text-white p-3 font-semibold text-sm flex items-center justify-between">
+                        <span><i class="fas fa-desktop mr-2"></i> Tạo Đặt Bàn</span>
+                        <div class="flex gap-2"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div>
+                    </div>
+                    <div class="p-6 flex-1 bg-white">
+                        <p class="font-bold mb-3 border-b pb-2">Tuỳ chọn bàn:</p>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="font-medium text-blue-600">Bàn gần cửa sổ</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4"> Khu vực VIP</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="font-medium text-blue-600">Giờ cao điểm</span></label>
+                        </div>
+                        <button class="mt-8 w-full bg-blue-600 text-white py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition">Tính Phí & Lưu</button>
+                    </div>
+                </div>
+
+                <!-- Code -->
+                <div class="col-span-7 rounded-xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col text-sm font-mono relative">
+                    <div class="bg-slate-800 p-3 text-slate-400 border-b border-slate-700">Form1.cs (Sự kiện Nút bấm)</div>
+                    <div class="p-6 bg-[#1e1e1e] flex-1 text-slate-300 leading-relaxed overflow-x-auto">
+<pre><code><span class="text-blue-400">void</span> <span class="text-yellow-200">btnSave_Click</span>(<span class="text-blue-400">object</span> sender, <span class="text-blue-400">EventArgs</span> e) {
+    <span class="text-green-500">// 1. Khởi tạo Lõi cơ bản</span>
+    ITableBooking booking = <span class="text-blue-400">new</span> <span class="text-emerald-300">BasicBooking</span>(); 
+    
+    <span class="text-green-500">// 2. Bọc vỏ dựa trên UI</span>
+    <span class="text-purple-400">if</span> (chkWindowSeat.Checked)
+        booking = <span class="text-blue-400">new</span> <span class="text-amber-300">WindowSeatDecorator</span>(booking);
+        
+    <span class="text-purple-400">if</span> (chkVIP.Checked)
+        booking = <span class="text-blue-400">new</span> <span class="text-amber-300">VIPZoneDecorator</span>(booking);
+        
+    <span class="text-purple-400">if</span> (chkPeakHour.Checked)
+        booking = <span class="text-blue-400">new</span> <span class="text-amber-300">PeakHourDecorator</span>(booking);
+
+    <span class="text-green-500">// 3. In kết quả cuối cùng</span>
+    <span class="text-blue-400">decimal</span> total = booking.<span class="text-yellow-200">GetDepositFee</span>();
+    <span class="text-blue-400">string</span> info = booking.<span class="text-yellow-200">GetInfo</span>();
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Tổng kết -->
+        <div class="slide flex-col justify-center h-full px-20 max-w-6xl mx-auto text-center"
+             data-notes="Tóm lại, với Decorator, hệ thống của chúng ta đã linh hoạt và sạch sẽ hơn rất nhiều. Cảm ơn thầy cô và các bạn đã theo dõi.">
+            <div class="text-7xl text-emerald-400 mb-8"><i class="fas fa-medal"></i></div>
+            <h2 class="text-5xl font-bold mb-6 text-white">Điểm nhấn Kiến trúc</h2>
+            <div class="w-32 h-1 bg-emerald-500 rounded mx-auto mb-10"></div>
+            
+            <div class="grid grid-cols-3 gap-6 text-left">
+                <div class="glass-panel p-8 rounded-2xl border-t-4 border-emerald-500">
+                    <h3 class="text-xl font-bold text-white mb-3">Dập tắt bùng nổ lớp</h3>
+                    <p class="text-slate-400">Chấm dứt hoàn toàn việc phải tạo các Class ghép tên vô nghĩa như <code>VIPPeakHourBooking</code>.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-2xl border-t-4 border-blue-500">
+                    <h3 class="text-xl font-bold text-white mb-3">Mã UI "Sạch bong"</h3>
+                    <p class="text-slate-400">Form Winform không cần phải <code>if/else</code> tính tiền cộng trừ, nó chỉ làm nhiệm vụ: Bọc và Gọi.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-2xl border-t-4 border-purple-500">
+                    <h3 class="text-xl font-bold text-white mb-3">Mở rộng vô hạn</h3>
+                    <p class="text-slate-400">Tháng sau thêm phí "Máy lạnh"? Chỉ cần tạo 1 Class Decorator mới, không sợ sập code cũ!</p>
+                </div>
+            </div>
+
+            <div class="mt-16 text-slate-500 text-lg">
+                --- Cảm ơn các bạn đã lắng nghe ---
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="fixed bottom-6 right-6 flex gap-4 z-40 items-center">
+        <!-- Slide Counter -->
+        <div class="text-slate-400 font-mono bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700">
+            <span id="current-slide-num">1</span> / <span id="total-slides">10</span>
+        </div>
+        
+        <button id="btn-prev" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-blue-600 text-white flex items-center justify-center transition shadow-lg border border-slate-700">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button id="btn-next" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-blue-600 text-white flex items-center justify-center transition shadow-lg border border-slate-700">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Speaker Notes Toggle Button -->
+    <button id="btn-notes" class="fixed bottom-6 left-6 px-6 py-3 rounded-full bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-slate-900 border border-amber-500/50 flex items-center gap-2 transition z-40 shadow-lg font-bold">
+        <i class="fas fa-comment-dots"></i> Ghi chú thuyết trình
+    </button>
+
+    <!-- Speaker Notes Panel -->
+    <div id="notes-panel" class="fixed bottom-0 left-0 w-full bg-slate-900 border-t border-amber-500/30 p-6 z-50 transform translate-y-full transition-transform duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div class="max-w-6xl mx-auto relative">
+            <button id="btn-close-notes" class="absolute -top-2 right-0 text-slate-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-amber-400 font-bold uppercase tracking-wider text-sm mb-3"><i class="fas fa-microphone text-amber-500 mr-2"></i>Kịch bản nói (Slide <span id="note-slide-num">1</span>)</h3>
+            <p id="notes-content" class="text-white text-xl leading-relaxed font-light"></p>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+
+        // Elements
+        const progressBar = document.getElementById('progress-bar');
+        const numCurrent = document.getElementById('current-slide-num');
+        const numTotal = document.getElementById('total-slides');
+        
+        // Notes Elements
+        const notesPanel = document.getElementById('notes-panel');
+        const btnNotes = document.getElementById('btn-notes');
+        const btnCloseNotes = document.getElementById('btn-close-notes');
+        const notesContent = document.getElementById('notes-content');
+        const noteSlideNum = document.getElementById('note-slide-num');
+
+        // Init
+        numTotal.textContent = totalSlides;
+        updateUI();
+
+        function updateUI() {
+            // Update Slides
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update Progress
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+            numCurrent.textContent = currentSlide + 1;
+
+            // Update Notes Text
+            const noteText = slides[currentSlide].getAttribute('data-notes') || 'Không có ghi chú cho slide này.';
+            notesContent.textContent = noteText;
+            noteSlideNum.textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateUI();
+            }
+        }
+
+        // Toggle Notes Panel
+        function toggleNotes() {
+            notesPanel.classList.toggle('translate-y-full');
+            // Change button style based on state
+            if(notesPanel.classList.contains('translate-y-full')) {
+                btnNotes.classList.replace('bg-amber-500', 'bg-amber-500/20');
+                btnNotes.classList.replace('text-slate-900', 'text-amber-400');
+            } else {
+                btnNotes.classList.replace('bg-amber-500/20', 'bg-amber-500');
+                btnNotes.classList.replace('text-amber-400', 'text-slate-900');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('btn-next').addEventListener('click', nextSlide);
+        document.getElementById('btn-prev').addEventListener('click', prevSlide);
+        
+        btnNotes.addEventListener('click', toggleNotes);
+        btnCloseNotes.addEventListener('click', toggleNotes);
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'n' || e.key === 'N') {
+                toggleNotes();
+            }
+        });
+    </script>
+</body>
+</html>
